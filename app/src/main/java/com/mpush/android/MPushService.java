@@ -26,12 +26,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import com.mpush.android.BuildConfig;
 
 import com.mpush.api.Client;
 import com.mpush.api.ClientListener;
+import com.mpush.api.Constants;
+
+import com.mpush.demo.MyReceiver;
 
 /**
  * Created by yxx on 2016/2/13.
@@ -76,7 +82,7 @@ public final class MPushService extends Service implements ClientListener {
             if (MPushReceiver.hasNetwork(this)) {
                 MPush.I.client.start();
             }
-            MPushFakeService.startForeground(this);
+            //MPushFakeService.startForeground(this);
             flags = START_STICKY;
             SERVICE_START_DELAYED = 5;
             return super.onStartCommand(intent, flags, startId);
@@ -122,8 +128,8 @@ public final class MPushService extends Service implements ClientListener {
 
     @Override
     public void onReceivePush(Client client, byte[] content, int messageId) {
-        sendBroadcast(new Intent(ACTION_MESSAGE_RECEIVED)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_MESSAGE_RECEIVED)
                 .putExtra(EXTRA_PUSH_MESSAGE, content)
                 .putExtra(EXTRA_PUSH_MESSAGE_ID, messageId)
         );
@@ -132,8 +138,8 @@ public final class MPushService extends Service implements ClientListener {
     @Override
     public void onKickUser(String deviceId, String userId) {
         MPush.I.unbindAccount();
-        sendBroadcast(new Intent(ACTION_KICK_USER)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_KICK_USER)
                 .putExtra(EXTRA_DEVICE_ID, deviceId)
                 .putExtra(EXTRA_USER_ID, userId)
         );
@@ -141,8 +147,8 @@ public final class MPushService extends Service implements ClientListener {
 
     @Override
     public void onBind(boolean success, String userId) {
-        sendBroadcast(new Intent(ACTION_BIND_USER)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_BIND_USER)
                 .putExtra(EXTRA_BIND_RET, success)
                 .putExtra(EXTRA_USER_ID, userId)
         );
@@ -150,8 +156,8 @@ public final class MPushService extends Service implements ClientListener {
 
     @Override
     public void onUnbind(boolean success, String userId) {
-        sendBroadcast(new Intent(ACTION_UNBIND_USER)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_UNBIND_USER)
                 .putExtra(EXTRA_BIND_RET, success)
                 .putExtra(EXTRA_USER_ID, userId)
         );
@@ -159,8 +165,8 @@ public final class MPushService extends Service implements ClientListener {
 
     @Override
     public void onConnected(Client client) {
-        sendBroadcast(new Intent(ACTION_CONNECTIVITY_CHANGE)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_CONNECTIVITY_CHANGE)
                 .putExtra(EXTRA_CONNECT_STATE, true)
         );
     }
@@ -168,8 +174,8 @@ public final class MPushService extends Service implements ClientListener {
     @Override
     public void onDisConnected(Client client) {
         MPushReceiver.cancelAlarm(this);
-        sendBroadcast(new Intent(ACTION_CONNECTIVITY_CHANGE)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_CONNECTIVITY_CHANGE)
                 .putExtra(EXTRA_CONNECT_STATE, false)
         );
     }
@@ -177,8 +183,8 @@ public final class MPushService extends Service implements ClientListener {
     @Override
     public void onHandshakeOk(Client client, int heartbeat) {
         MPushReceiver.startAlarm(this, heartbeat - 1000);
-        sendBroadcast(new Intent(ACTION_HANDSHAKE_OK)
-                .addCategory(BuildConfig.APPLICATION_ID)
+        sendBroadcast(new Intent(this, MyReceiver.class)
+                .setAction(MPushService.ACTION_HANDSHAKE_OK)
                 .putExtra(EXTRA_HEARTBEAT, heartbeat)
         );
     }

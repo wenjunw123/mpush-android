@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Looper;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -12,13 +13,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.mpush.android.BuildConfig;
 import com.mpush.android.MPush;
 import com.mpush.android.MPushLog;
 import com.mpush.android.Notifications;
-import com.mpush.android.R;
 import com.mpush.api.Constants;
 import com.mpush.api.http.HttpCallback;
 import com.mpush.api.http.HttpMethod;
@@ -34,6 +31,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
+import com.mpush.android.R;
+import com.mpush.android.BuildConfig;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String getDeviceId() {
         TelephonyManager tm = (TelephonyManager) this.getSystemService(Activity.TELEPHONY_SERVICE);
-        String deviceId = tm.getDeviceId();
+        String deviceId = "";
         if (TextUtils.isEmpty(deviceId)) {
             String time = Long.toString((System.currentTimeMillis() / (1000 * 60 * 60)));
             deviceId = time + time;
